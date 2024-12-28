@@ -1,0 +1,37 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main  # يمكنك تغيير هذا إلى اسم الفرع الرئيسي لمشروعك إذا كان مختلفًا
+  pull_request:
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - name: Run SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn verify sonar:sonar \
+          -Dsonar.projectKey=Sabah_Ibahim_Diabetic_Care_Online \
+          -Dsonar.organization=sabah-ibrahim \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
